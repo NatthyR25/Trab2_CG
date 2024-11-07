@@ -1,0 +1,10 @@
+soma todas as coordenadas de x / 3, faz o mesmo com y e com z.
+fazer isso para todos os triangulos do objeto origem e para o destino.
+para cada triangulo de origem, associar com o triangulo mais próximo pelo centróide do destino.
+se de um lado tem 100 e do outro 50, para cada 2 triangulos vira 1 do outro lado.
+
+- tem que criar uma outra janela e ler o objeto 2.
+- o objeto 1 já está lido.
+- criar uma 3° janela para fazer a animação do morphing
+
+*Não importa se um objeto é maior que o outro.
