@@ -93,7 +93,7 @@ class Objeto3D:
                 self.faces.append([])
                 for a in range(-1, -4, -1):
                     self.faces[-1].append(i[a]) #Pega os 3 ultimos vértices pra formar uma nova face, enfiando tudo no final do array
-                i[-1].pop() #Tira o ultimo vértice do quadrado, assim temos um triângulo 
+                i.pop(-2) #Tira o penultimo vértice do quadrado, assim temos um triângulo 
         #Agora é rodar isso e em tese o metódo Desenha() vai produzir triângulos
 
 

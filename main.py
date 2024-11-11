@@ -21,6 +21,9 @@ def init():
     o.LoadFile('dude.obj')
     o2 = Objeto3D()
     o2.LoadFile('Porsche_911_GT2.obj')
+    
+    o.DivideQuadrado()
+    o2.DivideQuadrado()
 
     DefineLuz()
     PosicUser()
@@ -171,7 +174,6 @@ def teclado2(key, x, y):
     pass
 
 def main():
-
     glutInit(sys.argv)
 
     # Define o modelo de operacao da GLUT
