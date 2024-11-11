@@ -33,7 +33,7 @@ class Objeto3D:
                     fInfo = fVertex.split('/')
                     # dividimos cada elemento por '/'
                     self.faces[-1].append(int(fInfo[0]) - 1) # primeiro elemento é índice do vértice da face
-                    # ignoramos textura e normal
+            # ignoramos textura e normal
                 
             # ignoramos outros tipos de items, no exercício não é necessário e vai só complicar mais
         pass
@@ -86,5 +86,14 @@ class Objeto3D:
         
         glPopMatrix()
         pass
+
+    def DivideQuadrado(self):
+        for i in self.faces:
+            if len(i) == 4: #Procura quadrados pra dividir
+                self.faces.append([])
+                for a in range(-1, -4, -1):
+                    self.faces[-1].append(i[a]) #Pega os 3 ultimos vértices pra formar uma nova face, enfiando tudo no final do array
+                i[-1].pop() #Tira o ultimo vértice do quadrado, assim temos um triângulo 
+        #Agora é rodar isso e em tese o metódo Desenha() vai produzir triângulos
 
 

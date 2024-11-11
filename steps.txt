@@ -8,3 +8,7 @@ se de um lado tem 100 e do outro 50, para cada 2 triangulos vira 1 do outro lado
 - criar uma 3° janela para fazer a animação do morphing
 
 *Não importa se um objeto é maior que o outro.
+
+
+Precisamos de uma função "idle" pra fazer a animação.
+

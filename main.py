@@ -160,6 +160,12 @@ def desenha2():
 
 def teclado(key, x, y):
     o.rotation = (1, 0, 0, o.rotation[3] + 2)    
+    o2.rotation = (1, 0, 0, o.rotation[3] + 2)
+    glutPostRedisplay()
+    pass
+
+def teclado2(key, x, y):
+    o.rotation = (1, 0, 0, o.rotation[3] + 2)  
     o2.rotation = (1, 0, 0, o.rotation[3] + 2) 
     glutPostRedisplay()
     pass
@@ -193,6 +199,12 @@ def main():
     glutCreateWindow('Objeto2 - 3D')
     glutDisplayFunc(desenha2)
     glutKeyboardFunc(teclado)
+
+    #glutInitWindowSize(640, 480)
+    #glutInitWindowPosition(50 + 640, 300)
+    #glutCreateWindow('Morph - 3D')
+    #glutDisplayFunc(desenha3)
+    #glutKeyboardFunc(teclado)
 
     # Função responsável por fazer as inicializações
     init()
