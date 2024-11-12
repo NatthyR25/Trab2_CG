@@ -27,7 +27,8 @@ def init():
     
     o.DivideQuadrado()
     o2.DivideQuadrado()
-
+    o3.DivideQuadrado()
+    
     Qtdfaces_1 = len(o.faces) #Tamanho do array
     Qtdfaces_2 = len(o2.faces)
     global biggerObj
@@ -145,30 +146,30 @@ def Morph():
     if biggerObj == 0:
         while(i != len(o.faces)):
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
-                v1 = o.vertices[ o.face[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
-                v2 = o2.vertices[ o2.face[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
+                v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v2 = o2.vertices[ o2.faces[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
                 temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
                 temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
                 temp.y = temp.y / 50
                 temp.z = temp.z / 50
-                o3.vertices[ o.face[i][j] ] = v1 + temp # ob3 recebe essa mudança
+                o3.vertices[ o.faces[i][j] ] = v1 + temp # ob3 recebe essa mudança
             i = i + 1
             k = k + 1
-            if k > len(o2.faces):
+            if k >= len(o2.faces):
                 k = 0
     else:
         while(i != len(o2.faces)):
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
-                v1 = o.vertices[ o.face[k][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
-                v2 = o2.vertices[ o2.face[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
+                v1 = o.vertices[ o.faces[k][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v2 = o2.vertices[ o2.faces[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
                 temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
                 temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
                 temp.y = temp.y / 50
                 temp.z = temp.z / 50
-                o3.vertices[ o.face[k][j] ] = v1 + temp # ob3 recebe essa mudança
+                o3.vertices[ o.faces[k][j] ] = v1 + temp # ob3 recebe essa mudança
             i = i + 1
             k = k + 1
-            if k > len(o.faces):
+            if k >= len(o.faces):
                 k = 0
 
 def desenha():
@@ -221,7 +222,7 @@ def desenha3():
     o3.Desenha()
     o3.DesenhaWireframe()
     o3.DesenhaVertices()
-
+    Morph()
     glutSwapBuffers()
     pass
 
