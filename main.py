@@ -9,6 +9,7 @@ o:Objeto3D
 def init():
     global o
     global o2
+    global o3
     glClearColor(0.5, 0.5, 0.9, 1.0)
     glClearDepth(1.0)
 
@@ -21,10 +22,21 @@ def init():
     o.LoadFile('dude.obj')
     o2 = Objeto3D()
     o2.LoadFile('Porsche_911_GT2.obj')
+    o3 = Objeto3D()
+    o3.LoadFile("dude.obj")
     
     o.DivideQuadrado()
     o2.DivideQuadrado()
 
+    Qtdfaces_1 = o.faces.len() #Tamanho do array
+    Qtdfaces_2 = o2.faces.len()
+    global biggerObj
+    
+    if Qtdfaces_1 < Qtdfaces_2:
+        biggerObj = 1
+    else:
+        biggerObj = 0 
+    
     DefineLuz()
     PosicUser()
 
@@ -125,6 +137,40 @@ def DesenhaCubo():
     glutSolidCone(1, 1, 4, 4)
     glPopMatrix()
 
+def Morph():
+    global biggerObj
+    global frameTime
+    i = 0
+    k = 0
+    if biggerObj == 0:
+        while(i != o.faces.len()):
+            for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
+                v1 = o.vertices[ o.face[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v2 = o2.vertices[ o2.face[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
+                temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
+                temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
+                temp.y = temp.y / 50
+                temp.z = temp.z / 50
+                o3.vertices[ o.face[i][j] ] = v1 + temp # ob3 recebe essa mudança
+            i = i + 1
+            k = k + 1
+            if k > o2.faces.len():
+                k = 0
+    else:
+        while(i != o2.faces.len()):
+            for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
+                v1 = o.vertices[ o.face[k][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v2 = o2.vertices[ o2.face[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
+                temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
+                temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
+                temp.y = temp.y / 50
+                temp.z = temp.z / 50
+                o3.vertices[ o.face[k][j] ] = v1 + temp # ob3 recebe essa mudança
+            i = i + 1
+            k = k + 1
+            if k > o.faces.len():
+                k = 0
+
 def desenha():
     DefineLuz()
     PosicUser()
@@ -157,6 +203,24 @@ def desenha2():
     o2.Desenha()
     o2.DesenhaWireframe()
     o2.DesenhaVertices()
+
+    glutSwapBuffers()
+    pass
+
+def desenha3():
+    DefineLuz()
+    PosicUser()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    glMatrixMode(GL_MODELVIEW)
+
+    DesenhaPiso()
+    #DesenhaCubo()    
+    
+
+    o3.Desenha()
+    o3.DesenhaWireframe()
+    o3.DesenhaVertices()
 
     glutSwapBuffers()
     pass
@@ -202,11 +266,12 @@ def main():
     glutDisplayFunc(desenha2)
     glutKeyboardFunc(teclado)
 
-    #glutInitWindowSize(640, 480)
-    #glutInitWindowPosition(50 + 640, 300)
-    #glutCreateWindow('Morph - 3D')
-    #glutDisplayFunc(desenha3)
-    #glutKeyboardFunc(teclado)
+    glutInitWindowSize(640, 480)
+    glutInitWindowPosition(50 + 640, 300)
+    glutCreateWindow('Morph - 3D')
+    glutDisplayFunc(desenha3)
+    glutKeyboardFunc(teclado)
+    glutIdleFunc(Morph)
 
     # Função responsável por fazer as inicializações
     init()
