@@ -28,8 +28,8 @@ def init():
     o.DivideQuadrado()
     o2.DivideQuadrado()
 
-    Qtdfaces_1 = o.faces.len() #Tamanho do array
-    Qtdfaces_2 = o2.faces.len()
+    Qtdfaces_1 = len(o.faces) #Tamanho do array
+    Qtdfaces_2 = len(o2.faces)
     global biggerObj
     
     if Qtdfaces_1 < Qtdfaces_2:
@@ -143,7 +143,7 @@ def Morph():
     i = 0
     k = 0
     if biggerObj == 0:
-        while(i != o.faces.len()):
+        while(i != len(o.faces)):
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
                 v1 = o.vertices[ o.face[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
                 v2 = o2.vertices[ o2.face[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
@@ -154,10 +154,10 @@ def Morph():
                 o3.vertices[ o.face[i][j] ] = v1 + temp # ob3 recebe essa mudança
             i = i + 1
             k = k + 1
-            if k > o2.faces.len():
+            if k > len(o2.faces):
                 k = 0
     else:
-        while(i != o2.faces.len()):
+        while(i != len(o2.faces)):
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
                 v1 = o.vertices[ o.face[k][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
                 v2 = o2.vertices[ o2.face[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
@@ -168,7 +168,7 @@ def Morph():
                 o3.vertices[ o.face[k][j] ] = v1 + temp # ob3 recebe essa mudança
             i = i + 1
             k = k + 1
-            if k > o.faces.len():
+            if k > len(o.faces):
                 k = 0
 
 def desenha():
