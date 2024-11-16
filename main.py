@@ -246,11 +246,7 @@ def Morph():
                 temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
                 temp.y = temp.y / 50
                 temp.z = temp.z / 50
-                o3.vertices[ o.faces[i][j] ] = v1 + temp # ob3 recebe essa mudança
-                v3 = o3.vertices[ o.faces[i][j] ]
-                v3.x = v1.x + temp.x
-                v3.y = v1.y + temp.y
-                v3.z = v1.z + temp.z
+                o3.vertices.insert(o.faces[i][j], Ponto(v1.x + temp.x, v1.y + temp.y, v1.z + temp.z))
 
             i = i + 1
             if i >= len(o.faces):
