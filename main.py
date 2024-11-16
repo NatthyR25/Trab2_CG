@@ -4,6 +4,7 @@ from OpenGL.GL import *
 
 from Objeto3D import *
 import copy
+import math
 
 o:Objeto3D
 o2:Objeto3D
@@ -18,6 +19,8 @@ def init():
     global frameTime
     global associa
     frameTime = 50
+    centroid1 = Ponto(1000000, 1000000, 1000000)
+    centroid2 = Ponto(1000000, 1000000, 1000000)
     glClearColor(0.5, 0.5, 0.9, 1.0)
     glClearDepth(1.0)
 
@@ -34,17 +37,9 @@ def init():
     
     o.DivideQuadrado()
     o2.DivideQuadrado()
+    Associa()
     o3 = copy.deepcopy(o)
-    calculaCentroides()
-
-    Qtdfaces_1 = len(o.faces) #Tamanho do array
-    Qtdfaces_2 = len(o2.faces)
-    global biggerObj
-    
-    if Qtdfaces_1 < Qtdfaces_2:
-        biggerObj = 1
-    else:
-        biggerObj = 0 
+    #calculaCentroides()
     
     DefineLuz()
     PosicUser()
@@ -200,71 +195,99 @@ def calculaCentroides():
     centroid2 = Ponto(X, Y, Z) 
 
 
-def Associa():
+def Associa(): 
+    #A Lista a seguir será preenchida por 
     global associa
+    associa = []
+    #As listas a seguir serão preenchidas por [Indice da face no array de faces, Distância do centroide da face em relação ao centroide do objeto]
     associa1 = []
     associa2 = []
+    
     for i in range(len(o.faces)):
-        temp = o.faces[i][0]
-        temp2 = o.faces[i][1]
-        temp3 = Ponto(abs(temp.x - temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp3 = ponto1 - ponto2 (pontos do triangulo)
-        temp2 = o.faces[i][2]
-        temp2 = Ponto(abs(temp.x - temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp2 = ponto1 - ponto3 (pontos do triangulo)
-        temp2 = Ponto(abs(temp3.x + temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp2 = ponto1 - ponto3 (pontos do triangulo)
-        associa1.append()
+        associa1.append(None) #Abre espaço na lista, None é apenas para preecher tal espaço temporáriamente
+        p1 = o.vertices[o.faces[i][0]]
+        p2 = o.vertices[o.faces[i][1]] #Pega todos os pontos do triângulo
+        p3 = o.vertices[o.faces[i][2]]
+        centroidT = Ponto(math.floor((p1.x + p2.x + p3.x)/3), math.floor((p1.y + p2.y + p3.y)/3), math.floor((p1.z + p2.z + p3.z)/3)) #Calcula o centróide do triângulo
+        #A distância entre o centróide do objeto e o centróide do triângulo é calculada abaixo:        
+        distanciaCentroides = math.sqrt((centroidT.x - centroid1.x)**2 + (centroidT.y - centroid1.y)**2 + (centroidT.z - centroid1.z)**2)
+        temp = i #Temp vai ser usado para modificar o associa1 depois
+        for j, val in enumerate(associa1):
+            if val == None:
+                temp = j
+                break
+            elif val[1] >= distanciaCentroides:     #O bloco desse garante que a lista associa1 esteja ordenada pelas variáveis distanciaCentroides
+                temp = j
+                break
+        if associa1[temp] == None:
+            associa1[temp] = [i, distanciaCentroides]
+        else:
+            associa1.insert(temp, [i, distanciaCentroides])
+            if associa1[-1] == None:
+                associa1.pop(-1)
+    
+    for i in range(len(o2.faces)):
+        associa2.append(None) #Abre espaço na lista, None é apenas para preecher tal espaço temporáriamente
+        p1 = o2.vertices[o2.faces[i][0]]
+        p2 = o2.vertices[o2.faces[i][1]] #Pega todos os pontos do triângulo
+        p3 = o2.vertices[o2.faces[i][2]]
+        centroidT = Ponto(math.floor((p1.x + p2.x + p3.x)/3), math.floor((p1.y + p2.y + p3.y)/3), math.floor((p1.z + p2.z + p3.z)/3)) #Calcula o centróide do triângulo
+        #A distância entre o centróide do objeto e o centróide do triângulo é calculada abaixo:
+        distanciaCentroides = math.sqrt((centroidT.x - centroid2.x)**2 + (centroidT.y - centroid2.y)**2 + (centroidT.z - centroid2.z)**2)
+        temp = i #temp será o indíce que será usado para
+        for j, val in enumerate(associa2):
+            if val == None:
+                temp = j
+                break
+            elif val[1] >= distanciaCentroides:     #O bloco desse garante que a lista associa2 esteja ordenada pelas variáveis distanciaCentroides
+                temp = j
+                break
+        if associa2[temp] == None:
+            associa2[temp] = [i, distanciaCentroides]
+        else:
+            associa2.insert(temp, [i, distanciaCentroides])
+            if associa2[-1] == None:
+                associa2.pop(-1)
+
+    if len(associa1) < len(associa2): #Esse trecho serve pra equalizar as listas associa1 e 2
+        for i in range(len(associa1), len(associa2)):
+            o.faces.append([])
+            a = math.floor(len(associa1) * (i/len(associa2)))
+
+            for j in o.faces[a]:
+                v = o.vertices[j]
+                o.vertices.append(Ponto(v.x, v.y, v.z))
+                o.faces[-1].append(len(o.vertices) - 1)
+            
+            associa1.insert(a, [len(o.faces) - 1, associa1[a][1]])
+
+
+    for i in range(len(associa1)):
+        associa.insert(associa1[i][0], associa2[i][0])
 
 
 def Morph():
-    global biggerObj
     global frameTime
+    global associa
     i = 0
     k = 0
-    if biggerObj == 0:
-        while(i < len(o.faces)):
-            print("z")
-            for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
-                v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
-                v2 = o2.vertices[ o2.faces[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
-                temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
-                temp.x = temp.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
-                temp.y = temp.y / frameTime
-                temp.z = temp.z / frameTime
-                o3.vertices[ o.faces[i][j] ] = v1 + temp # ob3 recebe essa mudança
-            i = i + 1
-            k = k + 1
-            if k >= len(o2.faces):
-                k = 0
-        print("d")
+    for i in range(len(associa)):
+        for j in range(3):
+            v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+            v2 = o2.vertices[ o2.faces[associa[i]][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
+            v3 = o3.vertices[ o3.faces[i][j] ]
+            temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
+            temp.x = temp.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
+            temp.y = temp.y / frameTime
+            temp.z = temp.z / frameTime
+            o3.vertices[o.faces[i][j]] = Ponto(v3.x + temp.x, v3.y + temp.y, v3.z + temp.z)
+        
+        i = i + 1
+        k = k + 1
 
-    else:
-        while(i < len(o2.faces)):
-            print("z")
-            for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
-                v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
-                v2 = o2.vertices[ o2.faces[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
-                temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
-                temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
-                temp.y = temp.y / 50
-                temp.z = temp.z / 50
-                o3.vertices.insert(o.faces[i][j], Ponto(v1.x + temp.x, v1.y + temp.y, v1.z + temp.z))
-
-            i = i + 1
-            if i >= len(o.faces):
-                o.faces.append(o.faces[k]) #Copia uma face dentro do array de faces, e cola no final do mesmo array, isso é pra aumentar o array
-                o3.faces.append(o3.faces[k])
-                #k, nesse caso, é usado para rastrear as faces do começo ao fim, independentemente de "i"
-                for j in range(3):
-                    v = o.vertices[o.faces[k][j]] #Copia os dados de um vértice j
-                    temp = Ponto(v.x, v.y, v.z) #Cola dentro de uma cópia
-                    o.vertices.append(temp) #Enfia a cópia no fim no array de vertices
-                    v = o3.vertices[o3.faces[k][j]]
-                    temp = Ponto(v.x, v.y, v.z)
-                    o3.vertices.append(temp) #Faz o mesmo no Morph
-                    o.faces[-1][j] = len(o.vertices) - 1
-                k = k + 1
-                
-        print("d")
-
+        if k >= len(o2.faces):
+            k = 0
+    print("d")
 
 def desenha():
     DefineLuz()
