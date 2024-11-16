@@ -3,13 +3,21 @@ from OpenGL.GLU import *
 from OpenGL.GL import *
 
 from Objeto3D import *
+import copy
 
 o:Objeto3D
+o2:Objeto3D
+o3:Objeto3D 
 
 def init():
     global o
     global o2
     global o3
+    global centroid1
+    global centroid2
+    global frameTime
+    global associa
+    frameTime = 50
     glClearColor(0.5, 0.5, 0.9, 1.0)
     glClearDepth(1.0)
 
@@ -23,12 +31,12 @@ def init():
     o2 = Objeto3D()
     o2.LoadFile('Porsche_911_GT2.obj')
     o3 = Objeto3D()
-    o3.LoadFile("dude.obj")
     
     o.DivideQuadrado()
     o2.DivideQuadrado()
-    o3.DivideQuadrado()
-    
+    o3 = copy.deepcopy(o)
+    calculaCentroides()
+
     Qtdfaces_1 = len(o.faces) #Tamanho do array
     Qtdfaces_2 = len(o2.faces)
     global biggerObj
@@ -138,39 +146,129 @@ def DesenhaCubo():
     glutSolidCone(1, 1, 4, 4)
     glPopMatrix()
 
+
+def calculaCentroides():
+    global centroid1 
+    maior1 = Ponto(0,0,0)
+    menor1 = Ponto(0,0,0) 
+    global centroid2
+    maior2 = Ponto(0,0,0)
+    menor2 = Ponto(0,0,0)
+
+    for i in o.vertices:
+
+        if i.x > maior1.x:
+            maior1.x = i.x
+        if i.x < menor1.x:
+            menor1.x = i.x
+
+        if i.y > maior1.y:
+            maior1.y = i.y
+        if i.y < menor1.y:
+            menor1.y = i.y
+
+        if i.z > maior1.z:
+            maior1.z = i.z
+        if i.z < menor1.z:
+            menor1.z = i.z
+
+    for i in o2.vertices:
+
+        if i.x > maior2.x:
+            maior2.x = i.x
+        if i.x < menor2.x:
+            menor2.x = i.x
+
+        if i.y > maior2.y:
+            maior2.y = i.y
+        if i.y < menor2.y:
+            menor2.y = i.y
+
+        if i.z > maior2.z:
+            maior2.z = i.z
+        if i.z < menor2.z:
+            menor2.z = i.z
+    
+    X = (maior1.x - menor1.x)/2 + menor1.x
+    Y = (maior1.y - menor1.y)/2 + menor1.y
+    Z = (maior1.z - menor1.z)/2 + menor1.z
+    centroid1 = Ponto(X, Y, Z)
+
+    X = (maior2.x - menor2.x)/2 + menor2.x
+    Y = (maior2.y - menor2.y)/2 + menor2.y
+    Z = (maior2.z - menor2.z)/2 + menor2.z
+    centroid2 = Ponto(X, Y, Z) 
+
+
+def Associa():
+    global associa
+    associa1 = []
+    associa2 = []
+    for i in range(len(o.faces)):
+        temp = o.faces[i][0]
+        temp2 = o.faces[i][1]
+        temp3 = Ponto(abs(temp.x - temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp3 = ponto1 - ponto2 (pontos do triangulo)
+        temp2 = o.faces[i][2]
+        temp2 = Ponto(abs(temp.x - temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp2 = ponto1 - ponto3 (pontos do triangulo)
+        temp2 = Ponto(abs(temp3.x + temp2.x), abs(temp.y - temp2.y), abs(temp.z - temp2.z)) #temp2 = ponto1 - ponto3 (pontos do triangulo)
+        associa1.append()
+
+
 def Morph():
     global biggerObj
     global frameTime
     i = 0
     k = 0
     if biggerObj == 0:
-        while(i != len(o.faces)):
+        while(i < len(o.faces)):
+            print("z")
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
                 v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
                 v2 = o2.vertices[ o2.faces[k][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
                 temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
-                temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
-                temp.y = temp.y / 50
-                temp.z = temp.z / 50
+                temp.x = temp.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
+                temp.y = temp.y / frameTime
+                temp.z = temp.z / frameTime
                 o3.vertices[ o.faces[i][j] ] = v1 + temp # ob3 recebe essa mudança
             i = i + 1
             k = k + 1
             if k >= len(o2.faces):
                 k = 0
+        print("d")
+
     else:
-        while(i != len(o2.faces)):
+        while(i < len(o2.faces)):
+            print("z")
             for j in range(3): #Range pode ser 4 caso o morph seja com quadrados, se quiser podemos botar parametro la no Morph
-                v1 = o.vertices[ o.faces[k][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
                 v2 = o2.vertices[ o2.faces[i][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
                 temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
                 temp.x = temp.x / 50 #Divide temp pelo numero de frames da animação pra não ser instantânio
                 temp.y = temp.y / 50
                 temp.z = temp.z / 50
-                o3.vertices[ o.faces[k][j] ] = v1 + temp # ob3 recebe essa mudança
+                o3.vertices[ o.faces[i][j] ] = v1 + temp # ob3 recebe essa mudança
+                v3 = o3.vertices[ o.faces[i][j] ]
+                v3.x = v1.x + temp.x
+                v3.y = v1.y + temp.y
+                v3.z = v1.z + temp.z
+
             i = i + 1
-            k = k + 1
-            if k >= len(o.faces):
-                k = 0
+            if i >= len(o.faces):
+                o.faces.append(o.faces[k]) #Copia uma face dentro do array de faces, e cola no final do mesmo array, isso é pra aumentar o array
+                o3.faces.append(o3.faces[k])
+                #k, nesse caso, é usado para rastrear as faces do começo ao fim, independentemente de "i"
+                for j in range(3):
+                    v = o.vertices[o.faces[k][j]] #Copia os dados de um vértice j
+                    temp = Ponto(v.x, v.y, v.z) #Cola dentro de uma cópia
+                    o.vertices.append(temp) #Enfia a cópia no fim no array de vertices
+                    v = o3.vertices[o3.faces[k][j]]
+                    temp = Ponto(v.x, v.y, v.z)
+                    o3.vertices.append(temp) #Faz o mesmo no Morph
+                    o.faces[-1][j] = len(o.vertices) - 1
+                k = k + 1
+                
+        print("d")
+
 
 def desenha():
     DefineLuz()
@@ -184,9 +282,7 @@ def desenha():
     o.Desenha()
     o.DesenhaWireframe()
     o.DesenhaVertices()
-
-    
-
+    print("a")
     glutSwapBuffers()
     pass
 
@@ -204,6 +300,7 @@ def desenha2():
     o2.Desenha()
     o2.DesenhaWireframe()
     o2.DesenhaVertices()
+    print("b")
 
     glutSwapBuffers()
     pass
@@ -222,13 +319,17 @@ def desenha3():
     o3.Desenha()
     o3.DesenhaWireframe()
     o3.DesenhaVertices()
-    Morph()
+    print("c") 
+
     glutSwapBuffers()
+    Morph()
     pass
 
 def teclado(key, x, y):
     o.rotation = (1, 0, 0, o.rotation[3] + 2)    
     o2.rotation = (1, 0, 0, o.rotation[3] + 2)
+    o3.rotation = (1, 0, 0, o.rotation[3] + 2)
+
     glutPostRedisplay()
     pass
 
@@ -272,7 +373,6 @@ def main():
     glutCreateWindow('Morph - 3D')
     glutDisplayFunc(desenha3)
     glutKeyboardFunc(teclado)
-    glutIdleFunc(Morph)
 
     # Função responsável por fazer as inicializações
     init()

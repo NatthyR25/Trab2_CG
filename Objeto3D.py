@@ -10,6 +10,7 @@ class Objeto3D:
         self.faces    = []
         self.position = Ponto(0,0,0)
         self.rotation = (0,0,0,0)
+        self.centroide = Ponto(0,0,0)
         pass
 
     def LoadFile(self, file:str):
