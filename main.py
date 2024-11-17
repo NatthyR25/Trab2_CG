@@ -25,7 +25,7 @@ def init():
     morphCounter = 0
     centroid1 = Ponto(1000000, 1000000, 1000000)
     centroid2 = Ponto(1000000, 1000000, 1000000)
-    glClearColor(0.5, 0.5, 0.9, 1.0)
+    glClearColor(0.0, 0.0, 0.0, 1.0)
     glClearDepth(1.0)
 
     glDepthFunc(GL_LESS)
