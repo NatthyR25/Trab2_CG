@@ -18,6 +18,8 @@ def init():
     global centroid2
     global frameTime
     global associa
+    global isVMoved
+    isVMoved = []
     frameTime = 50
     centroid1 = Ponto(1000000, 1000000, 1000000)
     centroid2 = Ponto(1000000, 1000000, 1000000)
@@ -39,6 +41,8 @@ def init():
     o2.DivideQuadrado()
     Associa()
     o3 = copy.deepcopy(o)
+    createIsVMoved()
+    #copiaVertices()
     #calculaCentroides()
     
     DefineLuz()
@@ -141,6 +145,17 @@ def DesenhaCubo():
     glutSolidCone(1, 1, 4, 4)
     glPopMatrix()
 
+def copiaVertices():
+    for i in range(len(o.faces)):
+        for j in o.faces[i]: 
+            for a in range(len(o.faces)):
+                for b in range(len(o.faces[a])): #Ainda bem que é O((n+3)^2) e não O(n^4)
+                    if j == o.faces[a][b] and i != a: #j e o.faces[a][b] são os valores que correspondem a indices na lista de vertices
+                        # i e a são indices do array de faces
+                        v = o.vertices[j]
+                        o.vertices.append(Ponto(v.x, v.y, v.z))
+                        o.faces[a][b] = len(o.vertices) - 1
+                    
 
 def calculaCentroides():
     global centroid1 
@@ -265,29 +280,34 @@ def Associa():
     for i in range(len(associa1)):
         associa.insert(associa1[i][0], associa2[i][0])
 
+def createIsVMoved():
+    for i in range(len(o3.vertices)):
+        isVMoved.append(False)
+
 
 def Morph():
     global frameTime
     global associa
-    i = 0
-    k = 0
+    global isVMoved
+
+    for i in range(len(o3.vertices)):
+        isVMoved[i] = False
     for i in range(len(associa)):
         for j in range(3):
-            v1 = o.vertices[ o.faces[i][j] ] # v1 recebe um objeto Ponto() que é um vértice do obj1
-            v2 = o2.vertices[ o2.faces[associa[i]][j] ] # v2 recebe um objeto Ponto() que é um vértice do obj2
-            v3 = o3.vertices[ o3.faces[i][j] ]
-            temp = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
-            temp.x = temp.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
-            temp.y = temp.y / frameTime
-            temp.z = temp.z / frameTime
-            o3.vertices[o.faces[i][j]] = Ponto(v3.x + temp.x, v3.y + temp.y, v3.z + temp.z)
-        
-        i = i + 1
-        k = k + 1
+            k = o3.faces[i][j] #o3.faces[i][j] == o.faces[i][j]
+            if not (isVMoved[k]):
+                v1 = o.vertices[k] # v1 recebe um objeto Ponto() que é um vértice do obj1
+                v2 = o2.vertices[o2.faces[associa[i]][j]] # v2 recebe um objeto Ponto() que é um vértice do obj2
+                v3 = o3.vertices[k]
+                tempV = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
+                tempV.x = tempV.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
+                tempV.y = tempV.y / frameTime
+                tempV.z = tempV.z / frameTime
+                o3.vertices[k] = Ponto(v3.x + tempV.x, v3.y + tempV.y, v3.z + tempV.z)
+                isVMoved[k] = True
+                
 
-        if k >= len(o2.faces):
-            k = 0
-    print("d")
+
 
 def desenha():
     DefineLuz()
