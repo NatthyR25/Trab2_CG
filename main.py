@@ -19,8 +19,10 @@ def init():
     global frameTime
     global associa
     global isVMoved
+    global morphCounter
     isVMoved = []
     frameTime = 50
+    morphCounter = 0
     centroid1 = Ponto(1000000, 1000000, 1000000)
     centroid2 = Ponto(1000000, 1000000, 1000000)
     glClearColor(0.5, 0.5, 0.9, 1.0)
@@ -289,7 +291,7 @@ def Morph():
     global frameTime
     global associa
     global isVMoved
-
+    global morphCounter
     for i in range(len(o3.vertices)):
         isVMoved[i] = False
     for i in range(len(associa)):
@@ -300,12 +302,12 @@ def Morph():
                 v2 = o2.vertices[o2.faces[associa[i]][j]] # v2 recebe um objeto Ponto() que é um vértice do obj2
                 v3 = o3.vertices[k]
                 tempV = Ponto(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z) #Temp é a diferença entre v1 e v2 A.K.A: v2 - v1 = temp
-                tempV.x = tempV.x / frameTime #Divide temp pelo numero de frames da animação pra não ser instantânio
-                tempV.y = tempV.y / frameTime
+                tempV.x = tempV.x / frameTime 
+                tempV.y = tempV.y / frameTime   #Divide temp pelo numero de frames da animação pra não ser instantânio
                 tempV.z = tempV.z / frameTime
                 o3.vertices[k] = Ponto(v3.x + tempV.x, v3.y + tempV.y, v3.z + tempV.z)
                 isVMoved[k] = True
-                
+    morphCounter += 1                
 
 
 
@@ -345,6 +347,7 @@ def desenha2():
     pass
 
 def desenha3():
+    global frameTime
     DefineLuz()
     PosicUser()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -361,7 +364,8 @@ def desenha3():
     print("c") 
 
     glutSwapBuffers()
-    Morph()
+    if(morphCounter != frameTime):
+        Morph()
     pass
 
 def teclado(key, x, y):
