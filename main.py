@@ -30,7 +30,7 @@ def init():
 
     glDepthFunc(GL_LESS)
     glEnable(GL_DEPTH_TEST)
-    glEnable(GL_CULL_FACE)
+    glDisable(GL_CULL_FACE)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
     o = Objeto3D()
@@ -43,6 +43,9 @@ def init():
     o2.DivideQuadrado()
     Associa()
     o3 = copy.deepcopy(o)
+    o3.DivideQuadrado()
+    
+    
     createIsVMoved()
     #copiaVertices()
     #calculaCentroides()
@@ -357,7 +360,7 @@ def desenha3():
     DesenhaPiso()
     #DesenhaCubo()    
     
-
+    
     o3.Desenha()
     o3.DesenhaWireframe()
     o3.DesenhaVertices()
